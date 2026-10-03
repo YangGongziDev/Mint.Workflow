@@ -1,0 +1,85 @@
+﻿/*
+ *Author：杨工子
+ *Contact：YangGongzi@163.com
+ *Website：https://www.yanggongzi.dev
+ *此文件代码由框架生成器生成,任何更改都可能导致被代码生成器覆盖
+*/
+
+using System;
+using Microsoft.Extensions.Configuration;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Mint.Workflow.Entity;
+using Mint.Workflow.Entity.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Mint.Workflow.Common;
+using Mint.Workflow.Common.Controller;
+using Mint.Workflow.Repository;
+using Mint.Workflow.Repository.DbContexts;
+using Mint.Workflow.Repository.IDbContexts;
+using Mint.Workflow.Service.IServices;
+using Mint.Workflow.Service.Services;
+using Mint.Workflow.Common.Exception;
+using Mint.Workflow.Common.Extentiions;
+
+namespace Mint.Workflow.WebApi;
+
+public class Program {
+    public static void Main(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+
+        // 使用CommonController自定义拓展模块
+        builder.Services.AddCommonControllers();
+         
+        // 加载MappingProFile
+        builder.Services.AddAutoMapper(typeof(EntityProfileMapping));
+        
+        // 配置身份认证Authentication
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);// 设置Cookie的过期时间
+            });
+                
+        // 配置身份认证权限校验
+        builder.Services.AddAuthorization();
+            
+        // 实现配置 IDbContext
+        builder.Services.AddScoped<IDbContext>(sp => {
+            var conn = sp.GetRequiredService<IConfiguration>().GetConnectionString("PostgreSQL") ?? throw new InvalidOperationException("Connection string 'PostgreSQL' is not configured.");
+            return new DbContext(conn);
+        });
+
+        // 配置 Services依赖注册
+        {{- for entity in entitys }}
+        builder.Services.AddScoped<I{{entity.class_name}}Service, {{entity.class_name}}Service>();
+        {{- end }}
+        
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment()) {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+
+        // 使用身份认证中间件
+        app.UseAuthentication();
+        
+        app.UseAuthorization();
+        
+        app.MapControllers();
+
+        app.Run();
+    }
+}

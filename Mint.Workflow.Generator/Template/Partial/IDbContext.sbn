@@ -1,0 +1,30 @@
+/*
+ *Author：杨工子
+ *Contact：YangGongzi@163.com
+ *Website：https://www.yanggongzi.dev
+ *此文件代码由框架生成器生成,任何更改都可能导致被代码生成器覆盖
+ *所有自定义业务代码都应在 非Partial 文件夹下的IDbContext.cs中编写
+*/
+
+using JadeFramework.Dapper.DbContext;
+using Mint.Workflow.Repository.IRepositorys;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Mint.Workflow.Common.Exception;
+
+namespace Mint.Workflow.Repository.IDbContexts;
+
+/// <summary>
+/// 工作流上下文接口
+/// </summary>  
+public partial interface IDbContext {
+
+    // 依赖IxxRepository{{ "\n" }} 
+    {{- for entity in entitys -}}
+    {{ "\t" }}public I{{entity.class_name}}Repository {{entity.class_name}}Repository { get; }{{ "\n" }} 
+    {{- end -}}
+    
+}

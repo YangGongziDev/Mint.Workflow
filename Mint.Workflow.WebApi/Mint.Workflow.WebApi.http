@@ -1,0 +1,6 @@
+@RocFlow_HostAddress = http://localhost:5020
+
+GET {{RocFlow_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

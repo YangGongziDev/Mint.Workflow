@@ -1,0 +1,79 @@
+/*
+ *Author：杨工子
+ *Contact：YangGongzi@163.com
+ *Website：https://www.yanggongzi.dev
+ *此文件代码由框架生成器生成,任何更改都可能导致被代码生成器覆盖
+ *所有自定义业务代码都应在 非Partial 文件夹下的{{name}}Controller.cs中编写
+*/
+ 
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Mint.Workflow.Common.Controller;
+using Microsoft.Extensions.Logging;
+using Mint.Workflow.Entity.Models;
+using Mint.Workflow.Entity.Dtos;
+using Mint.Workflow.Entity.Vos;
+using Mint.Workflow.Service.IServices;
+using Mint.Workflow.Service.Services;
+using Mint.Workflow.Common.Exception;
+using Mint.Workflow.Common.Result;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Newtonsoft.Json;
+using System.Security.Claims;
+
+namespace Mint.Workflow.WebApi.Controllers;
+
+/// <summary>
+/// {{comment}}控制器
+/// </summary>
+public partial class {{name}}Controller {
+
+    /// <summary>
+    /// 添加{{comment}}
+    /// </summary>
+    /// <param name="{{ name | string.downcase }}"></param>
+    [HttpPost]
+    public async Task<IActionResult> PostAsync([FromBody] {{ if name == "Workflow" }}Entity.Models.{{name}}{{ else }}{{name}}{{ end }} {{ name | string.downcase }}) {
+        var result = await _{{ name | string.downcase }}Service.Add{{name}}Async({{ name | string.downcase }});
+        return result ? StatusCode(StatusCodes.Status201Created) : BadRequest();
+    }
+
+    /// <summary>
+    ///  删除{{comment}}
+    /// </summary>
+    /// <param name="id"></param>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAsync([FromRoute] {{primarykey.property_type}} id) {
+        var result = await _{{ name | string.downcase }}Service.Delete{{name}}Async(id);
+        return result ? NoContent() : NotFound();
+    }
+
+    /// <summary>
+    /// 修改{{comment}}信息
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="{{ name | string.downcase }}"></param>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutAsync([FromRoute] {{primarykey.property_type}} id, [FromBody] {{ if name == "Workflow" }}Entity.Models.{{name}}{{ else }}{{name}}{{ end }} {{ name | string.downcase }}) {
+        if (!EqualityComparer<{{primarykey.property_type}}>.Default.Equals(id, {{ name | string.downcase }}.{{primarykey.property_name}})) {
+            return BadRequest();
+        }
+        var result = await _{{ name | string.downcase }}Service.Update{{name}}Async({{ name | string.downcase }});
+        return result ? NoContent() : NotFound();
+    }
+
+    /// <summary>
+    /// 获取{{comment}}信息
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<{{ if name == "Workflow" }}Entity.Models.{{name}}{{ else }}{{name}}{{ end }}>> GetAsync([FromRoute] {{primarykey.property_type}} id) {
+        var entity = await _{{ name | string.downcase }}Service.Get{{name}}ByIdAsync(id);
+        return entity == null ? NotFound() : Ok(entity);
+    }
+
+}
